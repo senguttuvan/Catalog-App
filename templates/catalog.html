@@ -1,0 +1,28 @@
+{% extends "main.html" %}
+{% block content %}
+{% if categorys != [] %}
+    {% for category in categorys %}
+        <h3>{{category.name}}</h3>
+        <a href="{{url_for('showItem', category_name = category.name)}}">
+             <button>Items</button>
+         </a>
+         <a href="{{url_for('editCategory', category_name = category.name)}}">
+             <button>Edit</button>
+         </a>
+        <a href="{{url_for('deleteCategory', category_name = category.name)}}">
+            <button>Delete</button>
+        </a>
+    {% endfor %}
+    <br>
+    <br>
+    <br>
+    <a href="{{url_for('newCategory')}}" >
+        <button>Create a New Category</button>
+    </a>
+{% else %}
+    <p> There are no categories at the moment... <p>
+    <a href="{{url_for('newCategory')}}" >
+        <button>Create a New Category</button>
+    </a>
+{% endif %}
+{% endblock %}
