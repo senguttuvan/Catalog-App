@@ -1,5 +1,10 @@
 {% extends "main.html" %}
 {% block content %}
+{% for categori in categorys %}
+        <a href="{{url_for('showItem', category_name = categori.name)}}">
+             <button>{{categori.name}}</button>
+         </a>
+{% endfor %}
 {% if categorys != [] %}
     {% for category in categorys %}
         <h3>{{category.name}}</h3>

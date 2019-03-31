@@ -35,7 +35,11 @@ session = DBSession()
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
+    # For DEBUG:
+    # login_session['username'] = 'nsengutt'
+    # login_session['user_id'] = 'asgd'
     return render_template('login.html', STATE=state)
+
 
 
 '''
@@ -198,17 +202,6 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    ''' 
-    #Nav : Changed here    
-    if session.query(User).filter_by(email=data['email']).count() != 0:
-        current_user = session.query(User).filter_by(email=data['email']).one()
-    else:
-        newUser = User(name=data['name'],
-                       email=data['email'])
-        session.add(newUser)
-        session.commit()
-        current_user = newUser
-    '''
 
     # see if user exists, if it doesn't make a new one
     user_id = getUserID(login_session['email'])
@@ -235,7 +228,19 @@ def createUser(login_session):
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
 
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+# For DEBUG Need to uncomment
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
@@ -260,7 +265,7 @@ def gdisconnect():
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         flash("Successfully logged out")
-        return redirect('/category')
+        return redirect('/')
         # return response
     else:
         response = make_response(
@@ -268,6 +273,11 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+# For DEBUG
+# @app.route('/gdisconnect')
+# def gdisconnect():
+#     del login_session['username']
+#     return redirect('/')
 
 @app.route('/')
 def showCatalog():
@@ -288,7 +298,6 @@ def newCategory():
         newCategory = Category(
             name=request.form['name'], user_id=user_id)
         session.add(newCategory)
-        flash('New Category %s Successfully Created' % newCategory.name)
         session.commit()
         return redirect(url_for('showCatalog'))
     else:
@@ -299,19 +308,19 @@ def newCategory():
 @app.route('/catalog/<category_name>/edit/', methods=['GET', 'POST'])
 def editCategory(category_name):
     """Edit Category"""
+    print(category_name)
     editedCategory = session.query(Category).filter_by(name=category_name).one()
 
     if 'username' not in login_session:
         return redirect('/login')
 
     if editedCategory.user_id != login_session['user_id']:
-        # flash('Category was created by another user and can only be edited by creator')
-        return redirect(url_for('showCategory'))
+        flash('WARNING ! Permission denied')
+        return redirect(url_for('showCatalog'))
 
     if request.method == 'POST':
         if request.form['name']:
             editedCategory.name = request.form['name']
-            flash('Category Successfully Updated %s' % editedCategory.name)
             return redirect(url_for('showCatalog'))
     else:
         return render_template('editcategory.html', category=editedCategory)
@@ -327,21 +336,18 @@ def deleteCategory(category_name):
     category = session.query(Category).filter_by(name=category_name).one()
 
     if category.user_id != login_session['user_id']:
-        # flash('Category was created by another user and can only be deleted by creator')
-        return redirect(url_for('showCategory'))
+        flash('WARNING ! Permission denied')
+        return redirect(url_for('showCatalog'))
 
     if request.method == 'POST':
         session.delete(category)
         session.commit()
-
-        flash('%s Successfully Deleted' % category.name)
 
         return redirect(url_for('showCatalog'))
     else:
         return render_template('deletecategory.html', category=category)
 
 
-##Nav : need to change int to string and items to item_name? in URI?
 @app.route('/category/<category_name>/')
 @app.route('/catalog/<category_name>/items/')
 def showItem(category_name):
@@ -370,23 +376,22 @@ def newItem(category_name):
                        user_id=user_id)
         session.add(newItem)
         session.commit()
-        flash('%s Successfully Created' % (newItem.name))
         return redirect(url_for('showItem', category_name=category_name))
     else:
         return render_template('newitem.html', category_name=category_name)
 
-@app.route('/catalog/<item_name>/edit',
+@app.route('/catalog/<category_name>/<item_name>/edit',
            methods=['GET', 'POST'])
 def editItem(item_name, category_name):
     """Edit Item"""
     if 'username' not in login_session:
         return redirect('/login')
-
+    print(login_session['username'])
     item = session.query(Item).filter_by(name=item_name).one()
 
     if item.user_id != login_session['user_id']:
-        flash('Item was created by another user and can only be edited by creator')
-        return redirect(url_for('showItem', category_id=category_id, category_name=category_name))
+        flash('WARNING ! Permission denied')
+        return redirect(url_for('showItem', category_name=category_name))
 
     if request.method == 'POST':
         if request.form['name']:
@@ -395,13 +400,12 @@ def editItem(item_name, category_name):
             item.description = request.form['description']
         session.add(item)
         session.commit()
-        flash('%s Successfully Updated' % (item.name))
         return redirect(url_for('showItem', category_name=category_name))
     else:
         return render_template('edititem.html', category_name=category_name, item=item)
 
 
-@app.route('/catalog/<item_name>/delete',
+@app.route('/catalog/<category_name>/<item_name>/delete',
            methods=['GET', 'POST'])
 def deleteItem(item_name, category_name):
     """Delete Item"""
@@ -411,19 +415,18 @@ def deleteItem(item_name, category_name):
     item = session.query(Item).filter_by(name=item_name).one()
 
     if item.user_id != login_session['user_id']:
-        flash('Item was created by another user and can only be deleted by creator')
+        flash('WARNING ! Permission denied')
         return redirect(url_for('showItem', category_name=category_name))
 
     if request.method == 'POST':
         session.delete(item)
         session.commit()
-        flash('%s Successfully Deleted' % (item.name))
         return redirect(url_for('showItem', category_name=category_name))
     else:
         return render_template('deleteitem.html', item=item, category_name=category_name)
 
 
-# Nav : How to setup API endpoint ? Need to create JSON from DB
+
 @app.route('/catalog.json')
 def getCatalogJSON():
     """Return JSON for all the categories"""

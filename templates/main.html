@@ -2,7 +2,7 @@
 <html>
 <head>
   <link href="//fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
-  <!--<link rel="stylesheet" href="/static/normalize.css">-->
+  <link rel="stylesheet" href="/static/normalize.css">
   <link rel="stylesheet" href="/static/style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Item Catalog</title>
@@ -11,7 +11,7 @@
 
   <div class="container">
     <div class="row">
-      <div class="one-half column" style="margin-top: 25%">
+      <div class="one-half column" style="margin-top: 5%">
 
 
   <header class="toolbar">
@@ -28,7 +28,8 @@
     {% if messages %}
       <ul>
       {% for message in messages %}
-          <li> <strong> {{ message }} </strong> </li>
+        <br>
+        <b> <h4> <strong> {{ message }} </strong> </h4> </b>
       {% endfor %}
       </ul>
       {% endif %}
@@ -36,8 +37,8 @@
 
     {% block content %}
     {% endblock %}
-  </main>
 
+  </main>
 
   </div></div></div>
 
