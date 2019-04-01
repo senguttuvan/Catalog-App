@@ -72,3 +72,4 @@ engine = create_engine('sqlite:///catalog.db',
                        connect_args={'check_same_thread': False},
                        poolclass=StaticPool)
 Base.metadata.create_all(engine)
+
