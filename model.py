@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 Base = declarative_base()
 
+
 # Nav: Do I need email ?
 # why no password hash ?
 class User(Base):
@@ -24,6 +25,7 @@ class User(Base):
             'name': self.name,
             'id': self.id,
         }
+
 
 # Nav: Can rmeove nullable ?
 class Category(Base):
@@ -43,6 +45,7 @@ class Category(Base):
             'user_id': self.user_id,
         }
 
+    
 class Item(Base):
     __tablename__ = 'item'
 
@@ -68,6 +71,3 @@ class Item(Base):
 
 engine = create_engine('sqlite:///catalog.db', connect_args={'check_same_thread':False}, poolclass=StaticPool)
 Base.metadata.create_all(engine)
-
-
-
