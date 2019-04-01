@@ -45,7 +45,7 @@ class Category(Base):
             'user_id': self.user_id,
         }
 
-    
+
 class Item(Base):
     __tablename__ = 'item'
 
@@ -53,7 +53,9 @@ class Item(Base):
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship("Category", backref=backref("items", cascade="all, delete-orphan"))
+    category = relationship("Category",
+                            backref=backref("items",
+                                            cascade="all, delete-orphan"))
 
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship(User)
@@ -65,9 +67,11 @@ class Item(Base):
             'name': self.name,
             'description': self.description,
             'id': self.id,
-            'user_id':self.user_id,
+            'user_id': self.user_id,
         }
 
 
-engine = create_engine('sqlite:///catalog.db', connect_args={'check_same_thread':False}, poolclass=StaticPool)
+engine = create_engine('sqlite:///catalog.db',
+                       connect_args={'check_same_thread': False},
+                       poolclass=StaticPool)
 Base.metadata.create_all(engine)
