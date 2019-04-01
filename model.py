@@ -8,8 +8,6 @@ from sqlalchemy.pool import StaticPool
 Base = declarative_base()
 
 
-# Nav: Do I need email ?
-# why no password hash ?
 class User(Base):
     __tablename__ = 'user'
 
@@ -27,7 +25,6 @@ class User(Base):
         }
 
 
-# Nav: Can rmeove nullable ?
 class Category(Base):
     __tablename__ = 'category'
 
