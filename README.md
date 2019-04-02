@@ -33,7 +33,7 @@ The major required software packages to be installed are PostgreSQL, Python3, fl
 The database will be automatically created as new categories and items are made using the web application. Alternately,
 the following commands can be used to create db from own sql dump -
 
-su postgres -c 'createuser -dRS <username>'
+su postgres -c 'createuser -dRS <username>'</br>
 su <username> -c 'psql catalog -f <path to sql dump file>'
 
 The table names and fields are given in the model.py file for creating the table in SQL dump file
