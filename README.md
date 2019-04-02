@@ -7,10 +7,11 @@ A web application that provides CRUD(Create Read Update Delete) for a list of it
 
 ## JSON API Structure
 The following API endpoints are implemented as part of the project - 
-####URI - /catalog/<category_name>/<item_name>/JSON
+
+/catalog/<category_name>/<item_name>/JSON
 Returns the record for <item_name> from Item table in database as a json file
 
-####URI - catalog.json
+catalog.json
 Returns the entire Category table from database as a json file
 
 
