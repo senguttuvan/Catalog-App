@@ -11,7 +11,7 @@ The following API endpoints are implemented as part of the project -
 /catalog/<category_name>/<item_name>/JSON
 Returns the record for <item_name> from Item table in database as a json file
 
-catalog.json
+/catalog.json
 Returns the entire Category table from database as a json file
 
 
